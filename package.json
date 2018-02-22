@@ -1,0 +1,35 @@
+{
+  "name": "excellence",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --env=dev",
+    "build": "webpack --env=prod --progress --colors",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taq-f/excellence.git"
+  },
+  "keywords": [
+    "excel",
+    "vue.js"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/taq-f/excellence/issues"
+  },
+  "homepage": "https://github.com/taq-f/excellence#readme",
+  "dependencies": {
+    "vue": "^2.5.13"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.9",
+    "vue-loader": "^14.1.1",
+    "vue-template-compiler": "^2.5.13",
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.1"
+  }
+}
