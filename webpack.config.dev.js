@@ -1,7 +1,9 @@
 module.exports = {
-  entry: './src/js/app.js',
+  entry: './src/js/expose.js',
   output: {
-    filename: 'bundle.js'
+    filename: 'excellence.js',
+    libraryTarget: 'var',
+    library: 'Excellence'
   },
   module: {
     loaders: [

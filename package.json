@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/taq-f/excellence#readme",
   "dependencies": {
-    "vue": "^2.5.13"
+    "vue": "^2.5.13",
+    "xlsx": "^0.12.2"
   },
   "devDependencies": {
     "css-loader": "^0.28.9",
