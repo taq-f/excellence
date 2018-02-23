@@ -13,22 +13,25 @@
         </tr>
       </table>
     </div>
+    <app-dialog ref="dialog" v-on:close="save($event)"></app-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { read, utils } from "xlsx";
+import Dialog from "./Dialog.vue";
 
 const EXTENSIONS_ALLOWED = new Set([".xls", ".xlsx"]);
+
+interface AppData {
+  currentFile: AppFile;
+  isDialogVisible: boolean;
+}
 
 interface AppFile {
   name: string;
   content: string[][];
-}
-
-interface AppData {
-  currentFile: AppFile;
 }
 
 function getExtension(v: string): string {
@@ -39,9 +42,13 @@ function getExtension(v: string): string {
 }
 
 export default Vue.extend({
+  components: {
+    "app-dialog": Dialog
+  },
   data(): AppData {
     return {
-      currentFile: { name: "", content: [] }
+      currentFile: { name: "", content: [] },
+      isDialogVisible: true
     };
   },
   methods: {
@@ -65,6 +72,9 @@ export default Vue.extend({
         content: []
       };
       this.render(file);
+
+      const dialogRef: any = this.$refs.dialog;
+      dialogRef.$emit("open", file);
     },
     render(file: File): void {
       const reader = new FileReader();
@@ -77,6 +87,10 @@ export default Vue.extend({
         this.currentFile.content = data;
       };
       reader.readAsBinaryString(file);
+    },
+    save(data: string): void {
+      console.log("Dialog closed!", data);
+      this.isDialogVisible = false;
     }
   }
 });
