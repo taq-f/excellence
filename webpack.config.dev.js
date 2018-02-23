@@ -1,8 +1,8 @@
 module.exports = {
-  entry: './src/js/expose.js',
+  entry: './src/ts/expose.ts',
   output: {
     filename: 'excellence.js',
-    libraryTarget: 'var',
+    libraryTarget: 'umd',
     library: 'Excellence'
   },
   module: {
@@ -12,10 +12,19 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader'
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        }
       }
     ]
   },
   resolve: {
+    extensions: ['.js', '.ts', '.vue'],
     alias: {
       vue: 'vue/dist/vue.esm.js'
     }

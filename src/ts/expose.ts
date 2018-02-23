@@ -5,13 +5,13 @@
  * users to write `MyApp.default.exportedFunction()` instead of `MyApp.exportedFunction`.
  * 
  * To fix this problem, prepare a wrapper (this module) that imports what to be
- * exposed and exports them in nodeJS `module.exports` style.
+ * exposed and exports them in `export = xxxxx` style.
  * 
  * Build entry of webpack should be this module.
  */
 
-const app = require('./app');
+import initialize from './app';
 
-module.exports = {
-    initialize: app.default,
+export = {
+    initialize,
 };

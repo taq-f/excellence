@@ -16,46 +16,61 @@
   </div>
 </template>
 
-<script>
-const XLSX = require("xlsx");
-const EXTENSIONS_ALLOWED = new Set(["xlsx"]);
+<script lang="ts">
+import Vue from "vue";
+import { read, utils } from "xlsx";
 
-module.exports = {
-  data: function() {
+// const EXTENSIONS_ALLOWED = new Set(['xlsx']);
+
+interface AppFile {
+  name: string;
+}
+
+interface AppData {
+  currentFile: AppFile;
+  content: string[][];
+}
+
+export default Vue.extend({
+  data(): AppData {
     return {
-      currentFile: {},
+      currentFile: { name: "" },
       content: []
     };
   },
+  computed: {
+    something(): string {
+      return "aaa";
+    }
+  },
   methods: {
-    fileChange(files) {
+    fileChange(files: FileList): void {
       if (!files || files.length === 0) {
         console.log("no file");
         return;
       }
       const file = files[0];
 
-      this.readFile(file);
+      this.render(file);
 
       this.currentFile = {
         name: file.name
       };
     },
-    readFile(file) {
+    render(file: File): void {
       const reader = new FileReader();
       reader.onload = () => {
         const content = reader.result;
-        const workbook = XLSX.read(content, { type: "binary" });
+        const workbook = read(content, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        console.log(data);
+        const data = utils.sheet_to_json(sheet, { header: 1 }) as string[][];
         this.content = data;
       };
       reader.readAsBinaryString(file);
     }
   }
-};
+});
 </script>
 
 <style scoped>
