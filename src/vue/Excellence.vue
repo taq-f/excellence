@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <p>
-      <input type="file" v-on:change="fileChange($event.target.files)">
+      <input type="file" v-on:change="load($event.target.files)">
     </p>
     <p>
       {{ currentFile.name }}
     </p>
     <div class="preview-area">
       <table class="table">
-        <tr v-for="line in content">
+        <tr v-for="line in currentFile.content">
           <td class="cell" v-for="element in line">{{ element }}</td>
         </tr>
       </table>
@@ -20,42 +20,51 @@
 import Vue from "vue";
 import { read, utils } from "xlsx";
 
-// const EXTENSIONS_ALLOWED = new Set(['xlsx']);
+const EXTENSIONS_ALLOWED = new Set([".xls", ".xlsx"]);
 
 interface AppFile {
   name: string;
+  content: string[][];
 }
 
 interface AppData {
   currentFile: AppFile;
-  content: string[][];
+}
+
+function getExtension(v: string): string {
+  if (!v) {
+    return "";
+  }
+  return v.substring(v.lastIndexOf("."));
 }
 
 export default Vue.extend({
   data(): AppData {
     return {
-      currentFile: { name: "" },
-      content: []
+      currentFile: { name: "", content: [] }
     };
   },
-  computed: {
-    something(): string {
-      return "aaa";
-    }
-  },
   methods: {
-    fileChange(files: FileList): void {
+    load(files: FileList): void {
       if (!files || files.length === 0) {
         console.log("no file");
         return;
       }
       const file = files[0];
 
-      this.render(file);
+      const ext = getExtension(file.name);
+
+      if (!EXTENSIONS_ALLOWED.has(ext)) {
+        // TODO
+        console.log(`${ext} not allowed.`);
+        return;
+      }
 
       this.currentFile = {
-        name: file.name
+        name: file.name,
+        content: []
       };
+      this.render(file);
     },
     render(file: File): void {
       const reader = new FileReader();
@@ -65,7 +74,7 @@ export default Vue.extend({
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const data = utils.sheet_to_json(sheet, { header: 1 }) as string[][];
-        this.content = data;
+        this.currentFile.content = data;
       };
       reader.readAsBinaryString(file);
     }
