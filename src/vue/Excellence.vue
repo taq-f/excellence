@@ -6,14 +6,15 @@
     <p>
       {{ currentFile.name }}
     </p>
-    <div class="preview-area">
-      <table class="table">
-        <tr v-for="line in currentFile.content">
-          <td class="cell" v-for="element in line">{{ element }}</td>
-        </tr>
-      </table>
-    </div>
-    <app-dialog ref="dialog" v-on:close="save($event)"></app-dialog>
+    <app-dialog ref="dialog" v-on:close="save($event)">
+      <div class="preview-area">
+        <table class="table">
+          <tr v-for="line in currentFile.content">
+            <td class="cell" v-for="element in line">{{ element }}</td>
+          </tr>
+        </table>
+      </div>
+    </app-dialog>
   </div>
 </template>
 
@@ -22,11 +23,10 @@ import Vue from "vue";
 import { read, utils } from "xlsx";
 import Dialog from "./Dialog.vue";
 
-const EXTENSIONS_ALLOWED = new Set([".xls", ".xlsx"]);
+const EXTENSIONS_ALLOWED = new Set([".csv", ".xls", ".xlsx"]);
 
 interface AppData {
   currentFile: AppFile;
-  isDialogVisible: boolean;
 }
 
 interface AppFile {
@@ -47,8 +47,7 @@ export default Vue.extend({
   },
   data(): AppData {
     return {
-      currentFile: { name: "", content: [] },
-      isDialogVisible: true
+      currentFile: { name: "", content: [] }
     };
   },
   methods: {
@@ -90,7 +89,6 @@ export default Vue.extend({
     },
     save(data: string): void {
       console.log("Dialog closed!", data);
-      this.isDialogVisible = false;
     }
   }
 });

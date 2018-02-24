@@ -1,9 +1,13 @@
 <template>
   <div v-if="seen">
     <div class="backdrop"></div>
-    <div class="content">
-      <div class="dialog">
-        <button v-on:click="close()">close</button>
+    <div class="content" v-on:click="close(true)">
+      <div class="panel" v-on:click="$event.stopPropagation()">
+        <slot></slot>
+        <div class="actions">
+          <button v-on:click="close(true)">cancel</button>
+          <button v-on:click="close(false)">OK</button>
+        </div>
       </div>
     </div>
   </div>
@@ -22,41 +26,38 @@ export default Vue.extend({
     };
   },
   methods: {
-    open(file: File) {
-      console.log("open dialog with", file.name);
+    open() {
       this.seen = true;
     },
-    close() {
+    close(hasCanceled: boolean) {
       this.seen = false;
-      this.$emit("close", "PARAM");
+      this.$emit("close", hasCanceled);
     }
   }
 });
 </script>
 
-
 <style scoped>
-.backdrop {
-  background-color: #555;
+.backdrop,
+.content {
   height: 100vh;
   left: 0;
-  opacity: 0.5;
   position: absolute;
   top: 0;
   width: 100vw;
+}
+
+.backdrop {
+  background-color: #555;
+  opacity: 0.5;
 }
 .content {
   align-items: center;
   background-color: transparent;
   display: flex;
-  height: 100vh;
   justify-content: center;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100vw;
 }
-.dialog {
+.panel {
   background-color: #fff;
   height: 200px;
   width: 200px;
