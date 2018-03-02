@@ -1,38 +1,29 @@
 <template>
-  <div class="container">
-    <p>
-      <input type="file" v-on:change="load($event.target.files)">
-    </p>
-    <p>
-      {{ currentFile.name }}
-    </p>
-    <app-dialog ref="dialog" v-on:close="save($event)">
-      <div class="preview-area">
-        <table class="table">
-          <tr v-for="line in currentFile.content">
-            <td class="cell" v-for="element in line">{{ element }}</td>
-          </tr>
-        </table>
-      </div>
-    </app-dialog>
+  <div>
+    <div v-if="file">
+      {{ file.name }}
+
+      <table class="table">
+        <tr v-for="line in content">
+          <td class="cell" v-for="element in line">{{ element }}</td>
+        </tr>
+      </table>
+
+    </div>
+    <div v-else>
+      no file
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { read, utils } from "xlsx";
-import Dialog from "./Dialog.vue";
 
 const EXTENSIONS_ALLOWED = new Set([".csv", ".xls", ".xlsx"]);
+const HORIZONTAL_CANDIDATES = "ABC".split("");
 
-interface AppData {
-  currentFile: AppFile;
-}
-
-interface AppFile {
-  name: string;
-  content: string[][];
-}
+console.log(HORIZONTAL_CANDIDATES);
 
 function getExtension(v: string): string {
   if (!v) {
@@ -42,39 +33,28 @@ function getExtension(v: string): string {
 }
 
 export default Vue.extend({
-  components: {
-    "app-dialog": Dialog
+  props: ["file"],
+  watch: {
+    file(newFile: File, oldFile: File): void {
+      if (!newFile) {
+        return;
+      }
+      const file = newFile;
+
+      const ext = getExtension(file.name);
+      if (!EXTENSIONS_ALLOWED.has(ext)) {
+        throw new Error(`unknown file extension: ${ext}`);
+      }
+
+      this.render(file);
+    }
   },
-  data(): AppData {
+  data(): { content?: string[][] } {
     return {
-      currentFile: { name: "", content: [] }
+      content: undefined
     };
   },
   methods: {
-    load(files: FileList): void {
-      if (!files || files.length === 0) {
-        console.log("no file");
-        return;
-      }
-      const file = files[0];
-
-      const ext = getExtension(file.name);
-
-      if (!EXTENSIONS_ALLOWED.has(ext)) {
-        // TODO
-        console.log(`${ext} not allowed.`);
-        return;
-      }
-
-      this.currentFile = {
-        name: file.name,
-        content: []
-      };
-      this.render(file);
-
-      const dialogRef: any = this.$refs.dialog;
-      dialogRef.$emit("open", file);
-    },
     render(file: File): void {
       const reader = new FileReader();
       reader.onload = () => {
@@ -82,28 +62,20 @@ export default Vue.extend({
         const workbook = read(content, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const data = utils.sheet_to_json(sheet, { header: 1 }) as string[][];
-        this.currentFile.content = data;
+        // const data = utils.sheet_to_json(sheet, { header: 1 }) as string[][];
+        const data = sheet["A5"].v;
+        this.content = [[data]];
       };
       reader.readAsBinaryString(file);
     },
-    save(data: string): void {
-      console.log("Dialog closed!", data);
+    getSelection(): string[] {
+      return ["data"];
     }
   }
 });
 </script>
 
 <style scoped>
-p {
-  font-size: 2em;
-  text-align: center;
-}
-.preview-area {
-  border: 1px solid #000;
-  width: 100%;
-  overflow: auto;
-}
 .table {
   border-collapse: separate;
   border-spacing: 0;

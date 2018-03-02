@@ -5,17 +5,49 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Sample</title>
-    <link rel="stylesheet" href="">
+    <style>
+        .app-area {
+            height: 300px;
+            width: 300px;
+            border: 2px solid gray;
+            overflow: auto;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="app">
-        <excellence></excellence>
+    <input type="file" id="file">
+    <button id="get">抽出</button>
+
+    <div class="app-area">
+        <div id="app"></div>
     </div>
 
     <script src="assets/excellence.js"></script>
     <script>
-        Excellence.initialize('#app');
+        function byId(id) {
+            return document.getElementById(id);
+        }
+
+        var excellence = Excellence.bind('#app');
+
+        byId('file').addEventListener('change', function (e) {
+            var files = e.target.files;
+
+            if (!files || files.length === 0) {
+                console.log("no file");
+                return;
+            }
+            var file = files[0];
+
+            excellence.setFile(file);
+        });
+
+        byId('get').addEventListener('click', function () {
+            var data = excellence.getData();
+            console.log(data);
+        });
+
     </script>
 </body>
 

@@ -10,8 +10,8 @@
  * Build entry of webpack should be this module.
  */
 
-import initialize from './app';
+import { bind } from './app';
 
 export = {
-    initialize,
+    bind,
 };
